@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.joaquin.curso.springboot.app.crudjpa.springbootcrudjpa.services.ProductServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
+
     @Autowired
     private IProductService service;
 
@@ -38,6 +40,7 @@ public class ProductController {
 
     @GetMapping
     public List<Product> list(){
+
         return service.findAll();
     }
 
@@ -51,19 +54,19 @@ public class ProductController {
     }
     
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody Product product, BindingResult result){ //Agregamos validation, y ponemos la anotación @Valid para validar de que se envie un dato correcto y en el producto (Entity creado), ponemos las reglas de validación
+    public ResponseEntity<?> create(@Valid @RequestBody Product product, BindingResult result){ //Agregamos validation, y ponemos la anotación @Valid para validar de que se envíe un dato correcto y en el producto (Entity creado), ponemos las reglas de validación
         //validation.validate(product, result); //Errores personalizados ubicados en ProductValidation
-        if(result.hasFieldErrors()){//Esto es si ocurre algun error
+        if(result.hasFieldErrors()){//Esto es si ocurre algún error
             return validation(result);
         }
-        Product productNew = service.save(product);                                                   //Tambien tenemos que poner el BindingResult, el cual siempre tiene que estar a la derecha del objeto a validar, este tiene todas las validaciones y mensajes de error que da el request
+        Product productNew = service.save(product);                                                   //También tenemos que poner el BindingResult, el cual siempre tiene que estar a la derecha del objeto a validar, este tiene todas las validaciones y mensajes de error que da el request
         return ResponseEntity.status(HttpStatus.CREATED).body(productNew);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update( @PathVariable Long id, @Valid @RequestBody Product product, BindingResult result){ //El valid siempre va al lado del @RequestBody
+    public ResponseEntity<?> update( @PathVariable Long id,  @Valid @RequestBody Product product, BindingResult result){ //El valid siempre va al lado del @RequestBody
         //validation.validate(product, result);
-        if(result.hasFieldErrors()){//Esto es si ocurre algun error es de la manera ya establecida el validation viene del @Valid
+        if(result.hasFieldErrors()){//Esto es si ocurre algún error es de la manera ya establecida el validation viene del @Valid
             return validation(result);
         }
         
@@ -89,7 +92,7 @@ public class ProductController {
 
     private ResponseEntity<Map<String, String>> validation(BindingResult result){
         Map<String, String> errors = new HashMap<>();
-        result.getFieldErrors().forEach(err ->{ //Da una lista de mensajesel getFieldErrors y lo recorremos para ir creando los mensajes
+        result.getFieldErrors().forEach(err ->{ //Da una lista de mensajes el getFieldErrors y lo recorremos para ir creando los mensajes
             errors.put(err.getField(), "El campo " + err.getField() + " " + err.getDefaultMessage());
         });
         return ResponseEntity.badRequest().body(errors); //Siempre que se pasa un status 400 se hace un badRequest
